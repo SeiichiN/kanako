@@ -23,7 +23,7 @@ module Yahoo
 		parse.elements.each('word') do |ele|
 			words = ele.elements["surface"][0]
 			parts = ele.elements["pos"][0]
-			kekka.push[{'words' => 'parts'}]
+			kekka.push[{words => parts}]
 		end
 		return kekka
 	end
