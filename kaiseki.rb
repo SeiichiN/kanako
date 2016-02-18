@@ -20,6 +20,6 @@ parse.elements.each('word') do |ele|
 	print "\t"
 	print ele.elements["pos"][0]
 	print "｜"
+	print "\n"
 end
 
-puts "終了"
