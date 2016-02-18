@@ -1,0 +1,199 @@
+<%# coding: utf-8 %>
+
+<%
+$CURRENT_DIR = Dir::pwd + '/../kana'
+#$CURRENT_DIR = '/home/se-ichi/public_html/kana'
+# puts $CURRENT_DIR  # デバッグ用
+$LOAD_PATH.push($CURRENT_DIR)
+
+require 'unmo'
+require 'cgi'
+
+#def prompt(unmo)
+#	return unmo.name + ':' + unmo.responder_name + '> '
+#end
+
+#def resp_opt_clicked
+#	@resp_opt.checked = !@resp_opt.checked?
+#end
+
+def prompt
+	p = @kana.name
+	p += "(#{@kana.mood})：" + @kana.responder_name # if @resp_opt.checked?
+	return p + '> '
+end
+
+#def get_filename(flname)
+#	filename = @CURRENT_DIR + flname
+#	return filename
+#end
+
+def log_read
+	filename = $CURRENT_DIR + '/log.txt'
+	begin
+		@log = File.readlines(filename)
+	rescue
+		File.open(filename, 'w') do |f|
+			f.write "Start>\n"
+		end
+		File.chmod 0666, filename
+	end
+end
+
+def log_write
+	filename = $CURRENT_DIR + '/log.txt'
+	File.open(filename, 'w') do |f|
+		@log.each do |t|
+			f << t
+		end
+	end
+end
+
+def putlog(newlog)
+	@log.push (newlog + "\n") # .force_encoding("utf-8")
+	log_write
+end
+
+def log_syokika
+	filename = $CURRENT_DIR + '/log.txt'
+	filebakname = $CURRENT_DIR + '/log.bak'
+	File.rename filename, filebakname
+	log_read
+end
+
+def owari
+	@ohanashi = 'ばいばい'
+end
+
+def change_look
+	# デバッグ用
+#	print "change_look@kana.mood => #{@kana.mood}<br>"
+	case @kana.mood
+	when -5..5
+		@mind_kana = "normal"
+		@img_kana = "./bmps/talk.gif"
+	when -10..-5
+		@mind_kana = "angry"
+		@img_kana = "./bmps/angry_talk.gif"
+	when -15..-10
+		@mind_kana = "more_angry"
+		@img_kana = "./bmps/more_angry_talk.gif"
+	when 5..10
+		@mind_kana = "happy"
+		@img_kana = "./bmps/happy_talk.gif"
+	when 10..15
+		@mind_kana = "more_happy"
+		@img_kana = "./bmps/more_happy_talk.gif"
+	end
+end
+
+
+
+cgi = CGI.new
+@ohanashi = cgi["ohanashi"]
+@syori0 = cgi["log-end"]
+@syori1 = cgi['syori']
+log_syokika if @syori0 == "syokika"
+
+
+# かなこ生成
+@mood_tmp = cgi['mood_val']
+mood = @mood_tmp.to_i / 10
+mood = 0 if mood == nil
+@kana = Unmo.new('kana', mood)
+
+# かなこの返事
+response = @kana.dialogue(@ohanashi)
+response = 'なにか話して' if @ohanashi == ''
+
+# ウィンドウタイトル
+@selfcaption = 'Unmo System : ' + @kana.name
+
+# かなこの画像
+change_look
+
+# ログ記録
+log_read if @log == nil
+
+# 終了ならびに辞書の保存
+# @kana.save if @syori1 == "owari"
+# 辞書の保存は「話す」たびにやることにした。
+# submitするたびに再読み込み～再描写するからね
+%>
+
+
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>人工無脳かなこ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+	<link rel="stylesheet" href="style.css" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<div id="wrap">
+		<header>
+			<div id="btn-menu"><i class="fa fa-bars fa-2x"></i></div>
+			<h1>人工無脳かなこ</h1>
+<!--			<p><%= @selfcaption %></p>  -->
+		</header>
+		<article>
+			<section id="gazoh">
+				<figure id="<%= @mind_kana %>">
+					<img src="<%= @img_kana %>" name="anime"  alt="かなこ">
+				</figure>
+		        <p><%= prompt + response %></p>
+			</section>
+			<section id="kaiwa">
+		        <form name="talk">
+		          <p>あなた＞<br>
+		          <input type="text" id="ohanashi" name="ohanashi">
+		          <% kana_mood_str = (@kana.mood * 10).to_s %>
+		          <input type="hidden" id="mood_val" name="mood_val" value="<%= kana_mood_str %>">
+		          <input id="btn-talk" type="submit" value="話す">
+		          </p>
+		        </form>				
+					<div class="message-btn">ログを見る</div>
+			</section>
+			<nav id="slide_menu" class="action">
+				<ul>
+				<li><form name="syokika">
+					<input type="hidden" id="log-end" name="log-end" value="syokika">
+					<input id="btn-logend" type="submit" value="ログを初期化する">
+				</form></li>
+				<li><form name="owari">
+					<input type="hidden" id="syori" name="syori" value="owari">
+					<input id="btn-end" type="submit" value="ばいばい">
+				</form></li>
+				</ul>
+			</nav>
+		</article>
+		<div class="modal-overlay"></div>
+		<div class="modal">
+			<aside id="log" class="modal-contents">
+				<div class="modal-close"><i class="fa fa-times-circle"></i></div>
+				<h2>ログ記録</h2>
+				<div id="log_area" class="log_area">
+					<% putlog('あなた> ' + @ohanashi) %>
+	    		<% putlog(prompt + response) %>
+					<% @log.each do |text| %>
+						<%= text.force_encoding("utf-8") + "<br>" %>
+					<% end %>
+				</div><!-- log_area -->
+			</aside>
+		</div><!--modal-->
+
+		<footer>
+			人工無脳かなこ Ver0.5 &copy; 2016 Billie's Works
+		</footer>
+		
+	</div><!-- wrap -->
+
+	<script type="text/javascript" src="kana.js" charset="utf-8"></script>
+	<script type="text/javascript" src="slidemenu.js"></script>
+	<script type="text/javascript" src="modal.js"></script>
+</body>
+</html>
