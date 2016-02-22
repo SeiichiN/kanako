@@ -2,6 +2,13 @@ $(function(){
 	var $overlay = $('.modal-overlay');
 	var $panel = $('.modal');
 
+	function moveBottom(){
+		/* ログエリアの最下行を常に表示させる */
+		var logarea = document.getElementById('log_area');
+		if(!logarea) return;
+		logarea.scrollTop = logarea.scrollHeight;
+	}
+
 	function setPosition(){
 		var panelHeight = $panel.height();
 		var windowHeight = $(window).height();
@@ -20,6 +27,7 @@ $(function(){
 		$overlay.fadeIn();
 		setPosition();
 		$(this).parent().addClass('flag');
+		moveBottom();
 	});
 
 	$(window).on('resize',function(){

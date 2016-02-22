@@ -1,5 +1,6 @@
 require 'responder'
 require 'dictionary'
+require 'morph'
 
 class Unmo
   def initialize(name, mood)
@@ -11,31 +12,45 @@ class Unmo
     @resp_what = WhatResponder.new('What', @dictionary)      # (1)
     @resp_random = RandomResponder.new('Random', @dictionary)
     @resp_pattern = PatternResponder.new('Pattern', @dictionary)
+    @resp_template = TemplateResponder.new('Template', @dictionary)
+    @resp_markov = MarkovResponder.new('Markov', @dictionary)
     @responder = @resp_pattern
   end
 
   def dialogue(input)
     @emotion.update(input)
-    # デバッグ用
-#    print "_unmo_ @emotion.mood => #{@emotion.mood}<br>"
+
+#    print "_unmo_ @emotion.mood => #{@emotion.mood}<br>" # for debugg
+    input = 'わたしはプログラムの女の子です。' if input == ""  # for debugg
+
+    parts = Morph::analyze(input)
 
     case rand(100)
-    when 0..59
+    when 0..29
       @responder = @resp_pattern
-    when 60..89
+    when 30..49
+      @responder = @resp_template
+    when 50..69
       @responder = @resp_random
+    when 70..89
+      @responder = @resp_markov
     else
       @responder = @resp_what
     end
 
     # デバッグ用
-#    print "input => #{input}<br>"
-#    print "@emotion.mood => #{@emotion.mood}<br>"
+    # print "input => #{input}<br>"
+    # print "@emotion.mood => #{@emotion.mood}<br>"
     # ここまで
 
-    resp = @responder.response(input, @emotion.mood)
+    resp = @responder.response(input, parts, @emotion.mood)
 
-    @dictionary.study(input)
+    # for debug
+    #print "(unmo)resp => "
+    #puts resp
+    # ここまで
+
+    @dictionary.study(input, parts)
     @dictionary.save
     
     return resp
@@ -54,10 +69,6 @@ class Unmo
   end
 
   attr_reader :name
-end
-
-def select_random(ary)
-  return ary[rand(ary.size)]
 end
 
 class Emotion

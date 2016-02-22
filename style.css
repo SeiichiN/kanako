@@ -61,6 +61,34 @@ figure {
 section#kaiwa {
 	margin: 5px;
 }
+.kana-prompt {
+	margin-bottom: 0;
+}
+.kana-text {
+	margin-top: 0;
+	padding: 1em;
+	border-radius: 5px;
+	border: solid 1px #757575;
+	position: relative;
+}
+.kana-text:before,
+.kana-text:after {
+	position: absolute;
+	top: -20px;
+	content: '';
+}
+.kana-text:before {
+	right: 10px;
+	border: 10px solid transparent;
+	border-bottom-color: #757575;
+}
+.kana-text:after {
+	right: 10px;
+	top: -19px;
+	border: 10px solid transparent;
+	border-bottom-color: bisque;
+}
+
 .message-btn {
 	display: none;
 }
@@ -79,9 +107,65 @@ aside h2 {
 .log_area {
 	margin: 5px;
 	padding: 5px;
+	font-size: 0.8em;
 	height: 400px;
 	overflow-y: scroll;
 }
+.log_area span {
+	text-align: right;
+}
+.you {
+	padding: 1px;
+	border-radius: 5px;
+	border: solid 1px #757575;
+	position: relative;
+}
+.you:before {
+	position: absolute;
+	content: '';
+	top: 1px;
+	right: -15px;
+	border: 7px solid transparent;
+	border-left-color: #757575;
+}
+.you:after {
+	position: absolute;
+	content: '';
+	top: 1px;
+	right: -14px;
+	border: 7px solid transparent;
+	border-left-color: antiquewhite;
+}
+/*
+.kana-text {
+	margin-top: 0;
+	padding: 1em;
+	border-radius: 5px;
+	border: solid 1px #757575;
+	position: relative;
+}
+.kana-text:before,
+.kana-text:after {
+	position: absolute;
+	top: -20px;
+	content: '';
+}
+.kana-text:before {
+	right: 10px;
+	border: 10px solid transparent;
+	border-bottom-color: #757575;
+}
+.kana-text:after {
+	right: 10px;
+	top: -19px;
+	border: 10px solid transparent;
+	border-bottom-color: bisque;
+*/
+
+
+
+
+
 footer {
 	clear: both;
 }

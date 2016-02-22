@@ -1,7 +1,7 @@
 <%# coding: utf-8 %>
 
 <%
-$CURRENT_DIR = Dir::pwd + '/../kana'
+$CURRENT_DIR = Dir::pwd + '/../kanako'
 #$CURRENT_DIR = '/home/se-ichi/public_html/kana'
 # puts $CURRENT_DIR  # デバッグ用
 $LOAD_PATH.push($CURRENT_DIR)
@@ -13,13 +13,18 @@ require 'cgi'
 #	return unmo.name + ':' + unmo.responder_name + '> '
 #end
 
-#def resp_opt_clicked
-#	@resp_opt.checked = !@resp_opt.checked?
-#end
+def resp_opt_clicked
+	if( @resp_opt == 'off' || @resp_opt == nil )
+		@resp_opt = 'on'
+	else
+		@resp_opt = 'off'
+	end
+	# print "checked => #{@resp_opt}"
+end
 
 def prompt
 	p = @kana.name
-	p += "(#{@kana.mood})：" + @kana.responder_name # if @resp_opt.checked?
+	p += "(#{@kana.mood})：" + @kana.responder_name if @resp_opt == 'on'
 	return p + '> '
 end
 
@@ -104,6 +109,7 @@ mood = 0 if mood == nil
 
 # かなこの返事
 response = @kana.dialogue(@ohanashi)
+response = CGI.escapeHTML(response)
 response = 'なにか話して' if @ohanashi == ''
 
 # ウィンドウタイトル
@@ -114,6 +120,12 @@ change_look
 
 # ログ記録
 log_read if @log == nil
+
+# メニュー（辞書）
+resp_opt_clicked if @syori1 == "dic"
+@resp_opt = 'on' if @resp_opt == nil
+@opt_menu = '辞書OFF' if @resp_opt == 'on'
+@opt_menu = '辞書ON' if @resp_opt == 'off'
 
 # 終了ならびに辞書の保存
 # @kana.save if @syori1 == "owari"
@@ -128,6 +140,9 @@ log_read if @log == nil
   <meta charset="UTF-8">
   <title>人工無脳かなこ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
 	<link rel="stylesheet" href="style.css" type="text/css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -145,7 +160,8 @@ log_read if @log == nil
 				<figure id="<%= @mind_kana %>">
 					<img src="<%= @img_kana %>" name="anime"  alt="かなこ">
 				</figure>
-		        <p><%= prompt + response %></p>
+		        <p class="kana-prompt"><%= prompt %></p>
+		        <p class="kana-text"><%= response %></p>
 			</section>
 			<section id="kaiwa">
 		        <form name="talk">
@@ -165,8 +181,8 @@ log_read if @log == nil
 					<input id="btn-logend" type="submit" value="ログを初期化する">
 				</form></li>
 				<li><form name="owari">
-					<input type="hidden" id="syori" name="syori" value="owari">
-					<input id="btn-end" type="submit" value="ばいばい">
+					<input type="hidden" id="syori" name="syori" value="dic">
+					<input id="btn-end" type="submit" value="<%= @opt_menu %>">
 				</form></li>
 				</ul>
 			</nav>
@@ -177,8 +193,8 @@ log_read if @log == nil
 				<div class="modal-close"><i class="fa fa-times-circle"></i></div>
 				<h2>ログ記録</h2>
 				<div id="log_area" class="log_area">
-					<% putlog('あなた> ' + @ohanashi) %>
-	    		<% putlog(prompt + response) %>
+					<% putlog('<span class="you">' + CGI.escapeHTML(@ohanashi) + '</span>') %>
+	    		<% putlog('<span class="kana">' + prompt + response + '</span>') %>
 					<% @log.each do |text| %>
 						<%= text.force_encoding("utf-8") + "<br>" %>
 					<% end %>

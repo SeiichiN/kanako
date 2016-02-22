@@ -21,9 +21,10 @@ module Yahoo
 		# 戻り値（オブジェクト）からループでデータを取得する
 		kekka = []
 		parse.elements.each('word') do |ele|
-			words = ele.elements["surface"][0]
-			parts = ele.elements["pos"][0]
-			kekka.push[{words => parts}]
+			words = ele.elements["surface"][0].to_s
+			parts = ele.elements["pos"][0].to_s
+			ary = [words, parts]
+			kekka.push( ary )
 		end
 		return kekka
 	end
