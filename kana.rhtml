@@ -193,10 +193,10 @@ resp_opt_clicked if @syori1 == "dic"
 				<div class="modal-close"><i class="fa fa-times-circle"></i></div>
 				<h2>ログ記録</h2>
 				<div id="log_area" class="log_area">
-					<% putlog('<span class="you">' + CGI.escapeHTML(@ohanashi) + '</span>') %>
-	    		<% putlog('<span class="kana">' + prompt + response + '</span>') %>
+					<% putlog('<p class="you"><span class="you">' + CGI.escapeHTML(@ohanashi) + '</span></p>') %>
+	    		<% putlog('<p class="kana"><span class="kana">' + response + '</span></p>') %>
 					<% @log.each do |text| %>
-						<%= text.force_encoding("utf-8") + "<br>" %>
+						<%= text.force_encoding("utf-8") %>
 					<% end %>
 				</div><!-- log_area -->
 			</aside>

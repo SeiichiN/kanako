@@ -66,7 +66,7 @@ section#kaiwa {
 }
 .kana-text {
 	margin-top: 0;
-	padding: 1em;
+	padding: 0.5em;
 	border-radius: 5px;
 	border: solid 1px #757575;
 	position: relative;
@@ -114,27 +114,50 @@ aside h2 {
 .log_area span {
 	text-align: right;
 }
-.you {
+p.you,
+p.kana {
 	padding: 1px;
 	border-radius: 5px;
 	border: solid 1px #757575;
+	box-sizing: border-box;
+	width: 95%;
+}
+p.you {
+	text-align: right;
+	margin: 5px 0 5px auto;
+}
+p.kana {
+	text-align: left;
+	margin: 5px auto 5px 0;
+}
+span.you,
+span.kana {
 	position: relative;
 }
-.you:before {
+span.you:before,
+span.you:after,
+span.kana:before,
+span.kana:after {
 	position: absolute;
 	content: '';
 	top: 1px;
-	right: -15px;
 	border: 7px solid transparent;
+}
+span.you:before {
+	right: -15px;
 	border-left-color: #757575;
 }
-.you:after {
-	position: absolute;
-	content: '';
-	top: 1px;
+span.you:after {
 	right: -14px;
-	border: 7px solid transparent;
 	border-left-color: antiquewhite;
+}
+span.kana:before {
+	left: -15px;
+	border-right-color: #757575;
+}
+span.kana:after {
+	left: -14px;
+	border-right-color: antiquewhite;
 }
 /*
 .kana-text {
