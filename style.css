@@ -121,6 +121,7 @@ p.kana {
 	border: solid 1px #757575;
 	box-sizing: border-box;
 	width: 95%;
+	display: table-cell
 }
 p.you {
 	text-align: right;
